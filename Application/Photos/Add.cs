@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Domain;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +5,6 @@ using Persistence;
 using Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Application.Core;
-using Microsoft.AspNetCore.Server.IIS.Core;
 
 namespace Application.Photos
 {
