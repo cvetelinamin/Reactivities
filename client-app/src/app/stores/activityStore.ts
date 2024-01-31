@@ -37,7 +37,6 @@ export default class ActivityStore {
 
                 activities.forEach(activity => {
                     this.setActivity(activity);
-                    console.log("loadActivities " + activity.host)
                   })  
                   this.setLoadingInitial(false);
             
@@ -71,18 +70,12 @@ export default class ActivityStore {
 
     private setActivity = (activity: Activity) => {
         const user = store.userStore.user;
-        console.log("user " + user?.displayName)
         if(user) {
-            console.log("attendees " + activity.attendees)
             activity.isGoing = activity.attendees!.some(                 
-                a => a.username === user.username                  
+                a => a.username === user.userName                  
             )
-                console.log(activity)
-                console.log("isgoing " + activity.isGoing)
-            activity.isHost = activity.hostUsername === user.username;
-            console.log("ishost " + activity.isHost)
-            activity.host = activity.attendees?.find(x => x.username === activity.hostUsername);
-            console.log("host " + activity.host)
+            activity.isHost = activity.hostName === user.userName;
+            activity.host = activity.attendees?.find(x => x.username === activity.hostName);
         }
         activity.date = new Date(activity.date!);
         this.activityRegistry.set(activity.id, activity);
@@ -102,7 +95,7 @@ export default class ActivityStore {
         try {
             await agent.Activities.create(activity);
             const newActivity = new Activity(activity);
-            newActivity.hostUsername = user!.username;
+            newActivity.hostName = user!.userName;
             newActivity.attendees = [attendee];
             this.setActivity(newActivity);
             runInAction(() => {              
@@ -156,7 +149,7 @@ export default class ActivityStore {
             runInAction(() => {
                 if(this.selectedActivity?.isGoing)
                 {
-                    this.selectedActivity.attendees = this.selectedActivity.attendees?.filter(a => a.username !== user?.username);
+                    this.selectedActivity.attendees = this.selectedActivity.attendees?.filter(a => a.username !== user?.userName);
                     this.selectedActivity.isGoing = false;
                 } else {
                     const attendee = new Profile(user!);
