@@ -20,8 +20,8 @@ namespace Application.Comments
 
         public class Handler : IRequestHandler<Query, Result<List<CommentDto>>>
         {
-        private readonly DataContext context;
-        private readonly IMapper mapper;
+            private readonly DataContext context;
+            private readonly IMapper mapper;
             public Handler(DataContext context, IMapper mapper) 
             {
                 this.mapper = mapper;
