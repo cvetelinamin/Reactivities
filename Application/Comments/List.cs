@@ -31,7 +31,7 @@ namespace Application.Comments
             {
                 var comments = await this.context.Comments
                             .Where(x => x.Activity.Id == request.ActivityId)
-                            .OrderBy(x => x.CreatedAt)
+                            .OrderByDescending(x => x.CreatedAt)
                             .ProjectTo<CommentDto>(this.mapper.ConfigurationProvider)
                             .ToListAsync();
 
