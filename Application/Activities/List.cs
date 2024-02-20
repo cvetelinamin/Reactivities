@@ -10,9 +10,12 @@ namespace Application.Activities
 {
     public class List
     {
-        public class Query : IRequest<Result<List<ActivityDto>>> {}
+        public class Query : IRequest<Result<PagedList<ActivityDto>>> 
+        {
+            public PagingParams Params { get; set; }
+        }
 
-        public class Handler : IRequestHandler<Query, Result<List<ActivityDto>>>
+        public class Handler : IRequestHandler<Query, Result<PagedList<ActivityDto>>>
         {
             private readonly DataContext context;
             private readonly IMapper mapper;
@@ -23,12 +26,15 @@ namespace Application.Activities
                 this.mapper = mapper;
                 this.context = context;
             }
-            public async Task<Result<List<ActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<PagedList<ActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var activities = await this.context.Activities.ProjectTo<ActivityDto>(this.mapper.ConfigurationProvider, new {currentUsername = this.userAccessor.GetUsername()}).ToListAsync();
+                var query = this.context.Activities
+                                .ProjectTo<ActivityDto>(this.mapper.ConfigurationProvider, new {currentUsername = this.userAccessor.GetUsername()})
+                                .AsQueryable();
 
-                var activitiesToReturn = this.mapper.Map<List<ActivityDto>>(activities);
-                return Result<List<ActivityDto>>.Success(activitiesToReturn);
+   //             var activitiesToReturn = this.mapper.Map<PagedList<ActivityDto>>(query);
+                return Result<PagedList<ActivityDto>>.Success(
+                                await PagedList<ActivityDto>.CreateAsync(query, request.Params.PageNumber, request.Params.PageSize));
             }
         }
     }
